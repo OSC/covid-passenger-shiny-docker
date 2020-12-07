@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# $1 is the app directory
+# $2 is the port
+
+# setup env for gdal and R
+source /opt/covid/shiny_app_env
+
+# launch app
+R --no-save --slave -f /opt/covid/start_shiny_app.R --args $1 $2

@@ -1,0 +1,6 @@
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+export LIBRARY_PATH=/usr/local/lib:$LIBRARY_PATH
+export INCLUDE=/usr/local/include:$INCLUDE
+export CPATH=/usr/local/include:$CPATH
+export FPATH=/usr/local/include:$FPATH
+export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
