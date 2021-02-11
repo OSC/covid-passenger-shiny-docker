@@ -7,6 +7,7 @@ set -xe
 curl --fail -sSLo /etc/yum.repos.d/passenger.repo https://oss-binaries.phusionpassenger.com/yum/definitions/el-passenger.repo
 
 # Install Passenger
+dnf makecache -y --disablerepo='*' --enablerepo='passenger'
 dnf install -y passenger
 dnf clean all && rm -rf /var/cache/dnf/*
 
