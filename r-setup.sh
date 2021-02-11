@@ -2,7 +2,7 @@
 
 set -e
 
-dnf builddep R
+dnf builddep -y R
 dnf clean all && rm -rf /var/cache/dnf/*
 
 mkdir -p /src/R
