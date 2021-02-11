@@ -7,28 +7,68 @@ RUN yum install -y \
         epel-release \
         # https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
     && yum-config-manager --enable epel && yum update -y && yum clean all && rm -rf /var/cache/yum/*
-
-RUN mkdir -p /opt/covid
-COPY passenger-setup.sh /opt/covid/passenger-setup.sh
-RUN /opt/covid/passenger-setup.sh
 RUN yum install -y \
-       gcc glibc glibc-common gd gd-devel gcc-c++ lapack-devel
-RUN yum install -y \
-       make file readline-devel
-COPY gdal-setup.sh /opt/covid/gdal-setup.sh
-RUN /opt/covid/gdal-setup.sh
-RUN yum install -y \
+        gcc glibc glibc-common gd gd-devel gcc-c++ lapack-devel make file readline-devel \
         gcc-gfortran zlib-devel bzip2-devel pcre-devel curl-devel xz-devel \
         which qpdf valgrind-devel java-1.8.0-openjdk-devel openssl-devel libxml2-devel \
         cairo-devel v8-devel udunits2-devel proj proj-devel proj-epsg proj-nad geos geos-devel \
         openblas-devel libXt-devel libXmu-devel libX11-devel less autoconf automake ncurses-devel libtool \
-        pango-devel pango libpng-devel libtiff-devel libjpeg-turbo-devel libicu-devel bzip2-devel
+        pango-devel pango libpng-devel libtiff-devel libjpeg-turbo-devel libicu-devel bzip2-devel \
+    && yum clean all && rm -rf /var/cache/yum/*
+
+RUN mkdir -p /opt/covid
+COPY passenger-setup.sh /opt/covid/passenger-setup.sh
+RUN /opt/covid/passenger-setup.sh
+COPY gdal-setup.sh /opt/covid/gdal-setup.sh
+RUN /opt/covid/gdal-setup.sh
 
 COPY r-setup.sh /opt/covid/r-setup.sh
 RUN /opt/covid/r-setup.sh
-RUN Rscript -e "install.packages(c('DT','EpiEstim','RColorBrewer','collapse','ggplot2','ggthemes','heatmaply','htmltools','htmlwidgets','lattice','leaflet','lubridate','maptools','mgcv','plotly','purrr','qcc','raster','readxl','reshape2','shiny','shinyWidgets','shinydashboard','shinyjs','shinythemes','sp','tidyquant','tidyverse','zoo'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('DT'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('EpiEstim'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('RColorBrewer'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('collapse'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('ggplot2'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('ggtext'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('ggthemes'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('heatmaply'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('htmltools'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('htmlwidgets'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('lattice'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('leaflet'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('lubridate'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('maptools'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('mgcv'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('plotly'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('purrr'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('qcc'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('raster'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('readxl'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('reshape2'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('shiny'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('shinyWidgets'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('shinydashboard'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('shinyjs'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('shinythemes'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('sp'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('tidyquant'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('tidyverse'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('zoo'), repos='https://cran.case.edu/')"
 # foreign
-RUN LD_LIBRARY_PATH=/usr/local/lib LIBRARY_PATH=/usr/local/lib INCLUDE=/usr/local/include CPATH=/usr/local/include FPATH=/usr/local/include PKG_CONFIG_PATH=/usr/local/lib/pkgconfig Rscript -e "install.packages(c('V8','units', 'gdtools', 'rgdal','rgeos', 'sf', 'svglite', 'leafpop'), repos='https://cran.case.edu/')"
+ENV LD_LIBRARY_PATH=/usr/local/lib
+ENV LIBRARY_PATH=/usr/local/lib
+ENV INCLUDE=/usr/local/include
+ENV CPATH=/usr/local/include
+ENV FPATH=/usr/local/include
+ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+RUN Rscript -e "install.packages(c('V8'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('units'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('gdtools'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('rgdal'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('rgeos'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('sf'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('svglite'), repos='https://cran.case.edu/')"
+RUN Rscript -e "install.packages(c('leafpop'), repos='https://cran.case.edu/')"
 COPY shiny_app_env /opt/covid/shiny_app_env
 COPY start_shiny_app.R /opt/covid/start_shiny_app.R
 COPY start_shiny_app /opt/covid/start_shiny_app
