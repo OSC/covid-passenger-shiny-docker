@@ -63,6 +63,7 @@ RUN Rscript --no-save /install_packages_or_die.R rgeos
 RUN Rscript --no-save /install_packages_or_die.R sf
 RUN Rscript --no-save /install_packages_or_die.R svglite
 RUN Rscript --no-save /install_packages_or_die.R leafpop
+RUN Rscript --no-save /install_packages_or_die.R formattable
 COPY shiny_app_env /opt/covid/shiny_app_env
 COPY start_shiny_app.R /opt/covid/start_shiny_app.R
 COPY start_shiny_app /opt/covid/start_shiny_app
