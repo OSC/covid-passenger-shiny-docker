@@ -1,37 +1,69 @@
-FROM centos:7
+FROM centos:8
 MAINTAINER Eric Franz <efranz@osc.edu>
 
-RUN yum update -y && yum clean all && rm -rf /var/cache/yum/*
-RUN yum install -y \
-        yum-utils \
+RUN dnf update -y && dnf clean all && rm -rf /var/cache/dnf/*
+RUN dnf install -y \
+        dnf-utils \
         epel-release \
-        # https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
-    && yum-config-manager --enable epel && yum update -y && yum clean all && rm -rf /var/cache/yum/*
+    && dnf config-manager --set-enabled powertools \
+    && dnf clean all && rm -rf /var/cache/dnf/*
+RUN dnf install -y \
+        R R-devel R-Rcpp R-Rcpp-devel gdal gdal-devel \
+    && dnf clean all && rm -rf /var/cache/dnf/*
+RUN dnf install -y \
+        curl-devel openssl-devel libxml2-devel libjpeg-turbo-devel \
+        udunits2-devel cairo-devel proj-devel sqlite-devel geos-devel \
+        && dnf clean all && rm -rf /var/cache/dnf/*
 
 RUN mkdir -p /opt/covid
 COPY passenger-setup.sh /opt/covid/passenger-setup.sh
 RUN /opt/covid/passenger-setup.sh
-RUN yum install -y \
-       gcc glibc glibc-common gd gd-devel gcc-c++ lapack-devel
-RUN yum install -y \
-       make file readline-devel
-COPY gdal-setup.sh /opt/covid/gdal-setup.sh
-RUN /opt/covid/gdal-setup.sh
-RUN yum install -y \
-        gcc-gfortran zlib-devel bzip2-devel pcre-devel curl-devel xz-devel \
-        which qpdf valgrind-devel java-1.8.0-openjdk-devel openssl-devel libxml2-devel \
-        cairo-devel v8-devel udunits2-devel proj proj-devel proj-epsg proj-nad geos geos-devel \
-        openblas-devel libXt-devel libXmu-devel libX11-devel less autoconf automake ncurses-devel libtool \
-        pango-devel pango libpng-devel libtiff-devel libjpeg-turbo-devel libicu-devel bzip2-devel
 
-COPY r-setup.sh /opt/covid/r-setup.sh
-RUN /opt/covid/r-setup.sh
-RUN Rscript -e "install.packages(c('DT','EpiEstim','RColorBrewer','collapse','ggplot2','ggthemes','heatmaply','htmltools','htmlwidgets','lattice','leaflet','lubridate','maptools','mgcv','plotly','purrr','qcc','raster','readxl','reshape2','shiny','shinyWidgets','shinydashboard','shinyjs','shinythemes','sp','tidyquant','tidyverse','zoo'), repos='https://cran.case.edu/')"
-# foreign
-RUN LD_LIBRARY_PATH=/usr/local/lib LIBRARY_PATH=/usr/local/lib INCLUDE=/usr/local/include CPATH=/usr/local/include FPATH=/usr/local/include PKG_CONFIG_PATH=/usr/local/lib/pkgconfig Rscript -e "install.packages(c('V8','units', 'gdtools', 'rgdal','rgeos', 'sf', 'svglite', 'leafpop'), repos='https://cran.case.edu/')"
-COPY shiny_app_env /opt/covid/shiny_app_env
+COPY install_packages_or_die.R /
+RUN Rscript --no-save /install_packages_or_die.R DT
+RUN Rscript --no-save /install_packages_or_die.R EpiEstim
+RUN Rscript --no-save /install_packages_or_die.R RColorBrewer
+RUN Rscript --no-save /install_packages_or_die.R collapse
+RUN Rscript --no-save /install_packages_or_die.R ggplot2
+RUN Rscript --no-save /install_packages_or_die.R ggtext
+RUN Rscript --no-save /install_packages_or_die.R ggthemes
+RUN Rscript --no-save /install_packages_or_die.R heatmaply
+RUN Rscript --no-save /install_packages_or_die.R htmltools
+RUN Rscript --no-save /install_packages_or_die.R htmlwidgets
+RUN Rscript --no-save /install_packages_or_die.R lattice
+RUN Rscript --no-save /install_packages_or_die.R leaflet
+RUN Rscript --no-save /install_packages_or_die.R lubridate
+RUN Rscript --no-save /install_packages_or_die.R maptools
+RUN Rscript --no-save /install_packages_or_die.R mgcv
+RUN Rscript --no-save /install_packages_or_die.R plotly
+RUN Rscript --no-save /install_packages_or_die.R purrr
+RUN Rscript --no-save /install_packages_or_die.R qcc
+RUN Rscript --no-save /install_packages_or_die.R raster
+RUN Rscript --no-save /install_packages_or_die.R readxl
+RUN Rscript --no-save /install_packages_or_die.R reshape2
+RUN Rscript --no-save /install_packages_or_die.R shiny
+RUN Rscript --no-save /install_packages_or_die.R shinyWidgets
+RUN Rscript --no-save /install_packages_or_die.R shinydashboard
+RUN Rscript --no-save /install_packages_or_die.R shinyjs
+RUN Rscript --no-save /install_packages_or_die.R shinythemes
+RUN Rscript --no-save /install_packages_or_die.R sp
+RUN Rscript --no-save /install_packages_or_die.R tidyquant
+RUN Rscript --no-save /install_packages_or_die.R tidyverse
+RUN Rscript --no-save /install_packages_or_die.R zoo
+RUN export DOWNLOAD_STATIC_LIBV8=1 ; Rscript --no-save /install_packages_or_die.R V8
+RUN Rscript --no-save /install_packages_or_die.R units
+RUN Rscript --no-save /install_packages_or_die.R gdtools
+RUN Rscript --no-save /install_packages_or_die.R rgdal
+RUN Rscript --no-save /install_packages_or_die.R rgeos
+RUN Rscript --no-save /install_packages_or_die.R sf
+RUN Rscript --no-save /install_packages_or_die.R svglite
+RUN Rscript --no-save /install_packages_or_die.R leafpop
+RUN Rscript --no-save /install_packages_or_die.R formattable
 COPY start_shiny_app.R /opt/covid/start_shiny_app.R
 COPY start_shiny_app /opt/covid/start_shiny_app
+
+COPY user-setup.sh /opt/covid/user-setup.sh
+RUN /opt/covid/user-setup.sh
 
 #
 # to get R install command for installing R deps, checkout branch of covid app and run command
