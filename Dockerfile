@@ -62,6 +62,9 @@ RUN Rscript --no-save /install_packages_or_die.R formattable
 COPY start_shiny_app.R /opt/covid/start_shiny_app.R
 COPY start_shiny_app /opt/covid/start_shiny_app
 
+COPY user-setup.sh /opt/covid/user-setup.sh
+RUN /opt/covid/user-setup.sh
+
 #
 # to get R install command for installing R deps, checkout branch of covid app and run command
 # rg library | rg 'library\((\w+)\)' -o -r '$1' | sort | uniq | ruby -e "puts 'install.packages(c(' + STDIN.read.split.map {|x| %Q('#{x}')}.join(',') + '))'"
