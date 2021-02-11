@@ -1,20 +1,20 @@
-FROM centos:7
+FROM centos:8
 MAINTAINER Eric Franz <efranz@osc.edu>
 
-RUN yum update -y && yum clean all && rm -rf /var/cache/yum/*
-RUN yum install -y \
-        yum-utils \
+RUN dnf update -y && dnf clean all && rm -rf /var/cache/dnf/*
+RUN dnf install -y \
+        dnf-utils \
         epel-release \
-        # https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
-    && yum-config-manager --enable epel && yum update -y && yum clean all && rm -rf /var/cache/yum/*
-RUN yum install -y \
-        gcc glibc glibc-common gd gd-devel gcc-c++ lapack-devel make file readline-devel \
+    && dnf config-manager --set-enabled powertools \
+    && dnf clean all && rm -rf /var/cache/dnf/*
+RUN dnf install -y \
+        gcc glibc glibc-common gd gd-devel gcc-c++ lapack-devel make file readline-devel curl \
         gcc-gfortran zlib-devel bzip2-devel pcre-devel curl-devel xz-devel \
         which qpdf valgrind-devel java-1.8.0-openjdk-devel openssl-devel libxml2-devel \
-        cairo-devel v8-devel udunits2-devel proj proj-devel proj-epsg proj-nad geos geos-devel \
+        cairo-devel udunits2-devel proj proj-devel geos geos-devel jasper-devel \
         openblas-devel libXt-devel libXmu-devel libX11-devel less autoconf automake ncurses-devel libtool \
         pango-devel pango libpng-devel libtiff-devel libjpeg-turbo-devel libicu-devel bzip2-devel \
-    && yum clean all && rm -rf /var/cache/yum/*
+    && dnf clean all && rm -rf /var/cache/dnf/*
 
 RUN mkdir -p /opt/covid
 COPY passenger-setup.sh /opt/covid/passenger-setup.sh
@@ -24,51 +24,45 @@ RUN /opt/covid/gdal-setup.sh
 
 COPY r-setup.sh /opt/covid/r-setup.sh
 RUN /opt/covid/r-setup.sh
-RUN Rscript -e "install.packages(c('DT'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('EpiEstim'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('RColorBrewer'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('collapse'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('ggplot2'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('ggtext'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('ggthemes'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('heatmaply'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('htmltools'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('htmlwidgets'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('lattice'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('leaflet'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('lubridate'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('maptools'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('mgcv'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('plotly'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('purrr'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('qcc'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('raster'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('readxl'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('reshape2'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('shiny'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('shinyWidgets'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('shinydashboard'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('shinyjs'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('shinythemes'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('sp'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('tidyquant'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('tidyverse'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('zoo'), repos='https://cran.case.edu/')"
-# foreign
-ENV LD_LIBRARY_PATH=/usr/local/lib
-ENV LIBRARY_PATH=/usr/local/lib
-ENV INCLUDE=/usr/local/include
-ENV CPATH=/usr/local/include
-ENV FPATH=/usr/local/include
-ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
-RUN Rscript -e "install.packages(c('V8'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('units'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('gdtools'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('rgdal'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('rgeos'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('sf'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('svglite'), repos='https://cran.case.edu/')"
-RUN Rscript -e "install.packages(c('leafpop'), repos='https://cran.case.edu/')"
+COPY install_packages_or_die.R /
+RUN Rscript --no-save /install_packages_or_die.R DT
+RUN Rscript --no-save /install_packages_or_die.R EpiEstim
+RUN Rscript --no-save /install_packages_or_die.R RColorBrewer
+RUN Rscript --no-save /install_packages_or_die.R collapse
+RUN Rscript --no-save /install_packages_or_die.R ggplot2
+RUN Rscript --no-save /install_packages_or_die.R ggtext
+RUN Rscript --no-save /install_packages_or_die.R ggthemes
+RUN Rscript --no-save /install_packages_or_die.R heatmaply
+RUN Rscript --no-save /install_packages_or_die.R htmltools
+RUN Rscript --no-save /install_packages_or_die.R htmlwidgets
+RUN Rscript --no-save /install_packages_or_die.R lattice
+RUN Rscript --no-save /install_packages_or_die.R leaflet
+RUN Rscript --no-save /install_packages_or_die.R lubridate
+RUN Rscript --no-save /install_packages_or_die.R maptools
+RUN Rscript --no-save /install_packages_or_die.R mgcv
+RUN Rscript --no-save /install_packages_or_die.R plotly
+RUN Rscript --no-save /install_packages_or_die.R purrr
+RUN Rscript --no-save /install_packages_or_die.R qcc
+RUN Rscript --no-save /install_packages_or_die.R raster
+RUN Rscript --no-save /install_packages_or_die.R readxl
+RUN Rscript --no-save /install_packages_or_die.R reshape2
+RUN Rscript --no-save /install_packages_or_die.R shiny
+RUN Rscript --no-save /install_packages_or_die.R shinyWidgets
+RUN Rscript --no-save /install_packages_or_die.R shinydashboard
+RUN Rscript --no-save /install_packages_or_die.R shinyjs
+RUN Rscript --no-save /install_packages_or_die.R shinythemes
+RUN Rscript --no-save /install_packages_or_die.R sp
+RUN Rscript --no-save /install_packages_or_die.R tidyquant
+RUN Rscript --no-save /install_packages_or_die.R tidyverse
+RUN Rscript --no-save /install_packages_or_die.R zoo
+RUN Rscript --no-save /install_packages_or_die.R V8
+RUN Rscript --no-save /install_packages_or_die.R units
+RUN Rscript --no-save /install_packages_or_die.R gdtools
+RUN Rscript --no-save /install_packages_or_die.R rgdal
+RUN Rscript --no-save /install_packages_or_die.R rgeos
+RUN Rscript --no-save /install_packages_or_die.R sf
+RUN Rscript --no-save /install_packages_or_die.R svglite
+RUN Rscript --no-save /install_packages_or_die.R leafpop
 COPY shiny_app_env /opt/covid/shiny_app_env
 COPY start_shiny_app.R /opt/covid/start_shiny_app.R
 COPY start_shiny_app /opt/covid/start_shiny_app

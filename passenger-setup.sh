@@ -1,19 +1,14 @@
 #!/bin/bash
 
 set -xe
-
-yum update -y && yum clean all && rm -rf /var/cache/yum/*
-
 ## Install Passenger
 
-# Install other prerequisites
-yum install -y  curl
-
-# Add our el7 YUM repository
+# Add YUM repository
 curl --fail -sSLo /etc/yum.repos.d/passenger.repo https://oss-binaries.phusionpassenger.com/yum/definitions/el-passenger.repo
 
 # Install Passenger
-yum install -y --enablerepo=epel passenger
+dnf install -y passenger
+dnf clean all && rm -rf /var/cache/dnf/*
 
 passenger-config validate-install
 

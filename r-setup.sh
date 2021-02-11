@@ -1,4 +1,9 @@
-yum-builddep R
+#!/bin/bash
+
+set -e
+
+dnf builddep R
+dnf clean all && rm -rf /var/cache/dnf/*
 
 mkdir -p /src/R
 cd /src/R
@@ -7,8 +12,8 @@ tar xzf R-3.6.3.tar.gz
 cd R-3.6.3
 
 ./configure --enable-R-shlib --with-blas --with-lapack --with-readline=yes --enable-memory-profiling
-make
-make install
+make -j2
+make -j2 install
 
 cd /src
 rm -rf R
