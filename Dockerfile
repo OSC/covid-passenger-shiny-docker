@@ -1,5 +1,7 @@
 FROM centos:8
-MAINTAINER Eric Franz <efranz@osc.edu>
+LABEL maintainer 'Eric Franz <efranz@osc.edu>'
+
+ENV R_BASE_VERSION 4.0.3
 
 RUN dnf update -y && dnf clean all && rm -rf /var/cache/dnf/*
 RUN dnf install -y \
@@ -8,16 +10,22 @@ RUN dnf install -y \
     && dnf config-manager --set-enabled powertools \
     && dnf clean all && rm -rf /var/cache/dnf/*
 RUN dnf install -y \
-        R R-devel R-Rcpp R-Rcpp-devel gdal gdal-devel \
+        gcc gcc-c++ gcc-gfortran gdb make curl curl-devel openssl-devel libxml2-devel libjpeg-turbo-devel \
+        udunits2-devel cairo-devel proj-devel sqlite-devel geos-devel gdal gdal-devel \
+        readline-devel libXt-devel java-11-openjdk-devel doxygen doxygen-latex texlive \
     && dnf clean all && rm -rf /var/cache/dnf/*
-RUN dnf install -y \
-        curl-devel openssl-devel libxml2-devel libjpeg-turbo-devel \
-        udunits2-devel cairo-devel proj-devel sqlite-devel geos-devel \
-        && dnf clean all && rm -rf /var/cache/dnf/*
 
 RUN mkdir -p /opt/covid
 COPY passenger-setup.sh /opt/covid/passenger-setup.sh
 RUN /opt/covid/passenger-setup.sh
+
+RUN curl -o R.tar.gz https://cran.r-project.org/src/base/R-4/R-${R_BASE_VERSION}.tar.gz \
+    && tar -xzf R.tar.gz; \
+    cd /R-${R_BASE_VERSION}; ./configure && make && make install; \
+    cd /; rm -rf /R-${R_BASE_VERSION} && rm /R.tar.gz;
+
+RUN cd /lib64; ln -s /usr/local/lib64/R/lib/libRblas.so libRblas.so \
+        && ln -s /usr/local/lib64/R/lib/libRlapack.so libRlapack.so;
 
 COPY install_packages_or_die.R /
 RUN Rscript --no-save /install_packages_or_die.R DT
