@@ -20,9 +20,10 @@ COPY passenger-setup.sh /opt/covid/passenger-setup.sh
 RUN /opt/covid/passenger-setup.sh
 
 RUN curl -o R.tar.gz https://cran.r-project.org/src/base/R-4/R-${R_BASE_VERSION}.tar.gz \
-    && tar -xzf R.tar.gz
+    && tar -xzf R.tar.gz; \
+    cd /R-${R_BASE_VERSION}; ./configure && make && make install; \
+    cd /; rm -rf /R-${R_BASE_VERSION} && rm /R.tar.gz;
 
-RUN cd R-${R_BASE_VERSION}; ./configure; make && make install;
 RUN cd /lib64; ln -s /usr/local/lib64/R/lib/libRblas.so libRblas.so \
         && ln -s /usr/local/lib64/R/lib/libRlapack.so libRlapack.so;
 
