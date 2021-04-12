@@ -23,7 +23,8 @@ RUN curl -o R.tar.gz https://cran.r-project.org/src/base/R-4/R-${R_BASE_VERSION}
     && tar -xzf R.tar.gz
 
 RUN cd R-${R_BASE_VERSION}; ./configure; make && make install;
-RUN cd /lib64; ln -s /usr/local/lib64/R/lib/libRblas.so libRblas.so;
+RUN cd /lib64; ln -s /usr/local/lib64/R/lib/libRblas.so libRblas.so \
+        && ln -s /usr/local/lib64/R/lib/libRlapack.so libRlapack.so;
 
 COPY install_packages_or_die.R /
 RUN Rscript --no-save /install_packages_or_die.R DT
