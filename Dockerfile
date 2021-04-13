@@ -71,6 +71,9 @@ RUN Rscript --no-save /install_packages_or_die.R spdep
 COPY start_shiny_app.R /opt/covid/start_shiny_app.R
 COPY start_shiny_app /opt/covid/start_shiny_app
 
+# cairo is available, but sadly not found first, so force to find it.
+RUN echo "options(bitmapType='cairo')" > /usr/local/lib64/R/etc/Rprofile.site
+
 COPY user-setup.sh /opt/covid/user-setup.sh
 RUN /opt/covid/user-setup.sh
 
