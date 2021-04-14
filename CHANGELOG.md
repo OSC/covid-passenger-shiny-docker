@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   throws invalid instruction errors that core dump in [4](https://github.com/OSC/covid-passenger-shiny-docker/pull/4)
 * Force the use of cairo because the default Xlib doesn't work to generate PNGs.
   [5](https://github.com/OSC/covid-passenger-shiny-docker/pull/5)
+* add ggmap dependency in [6](https://github.com/OSC/covid-passenger-shiny-docker/pull/6)
 
 ## [0.2.0]
 
