@@ -21,6 +21,8 @@ groupadd -g 7175 PDE0001
 
 useradd -g PAS1694 -u 33024 covidsim
 useradd -g PAS1694 -u 33031 covidsimdev
+useradd -g PAS1788 -u 33929 covid
+useradd -g PAS1788 -u 33930 coviddev
 useradd -g PZS0523 -u 36970 focalmap
 useradd -g PZS0523 -u 36971 focalmapdev
 
