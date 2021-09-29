@@ -14,19 +14,20 @@ groupadd -g 6493 PAS1694
 groupadd -g 6602 PZS1008
 groupadd -g 6603 accesscovidsim
 groupadd -g 6604 accesscovidsimdev
+groupadd -g 2925 PZS0523
 groupadd -g 7175 PDE0001
 
 useradd -g PAS1694 -u 33024 covidsim
 useradd -g PAS1694 -u 33031 covidsimdev
-useradd -g PDE0001 -u 36970 focalmap
-useradd -g PDE0001 -u 36971 focalmapdev
-useradd -g PAS1788 -u 33929 covid
-useradd -g PAS1788 -u 33930 coviddev
+useradd -g PZS0523 -u 36970 focalmap
+useradd -g PZS0523 -u 36971 focalmapdev
 
 usermod -aG accesscovidsim covidsim
 usermod -aG accesscovidsimdev covidsimdev
 usermod -aG PZS1008 covidsim
 usermod -aG PZS1008 covidsimdev
+usermod -aG PDE0001 focalmap
+usermod -aG PDE0001 focalmapdev
 
 
 # ??? do we need home dirs for these users???
