@@ -70,6 +70,7 @@ RUN Rscript --no-save /install_packages_or_die.R formattable
 RUN Rscript --no-save /install_packages_or_die.R spdep
 RUN Rscript --no-save /install_packages_or_die.R ggmap
 RUN Rscript --no-save /install_packages_or_die.R RSocrata
+RUN Rscript --no-save /install_packages_or_die.R readr
 COPY start_shiny_app.R /opt/covid/start_shiny_app.R
 COPY start_shiny_app /opt/covid/start_shiny_app
 
